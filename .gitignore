@@ -1,3 +1,9 @@
-*.json
+# Dados financeiros — nunca versionar
+data/
+
+# Outros formatos de extrato
 *.csv
 *.pdf
+
+# Secrets
+.env
