@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Extrato</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <div class="header-left">
+      <h1>Extrato de <strong id="titular-name"></strong></h1>
+      <span class="period-badge" id="period-badge"></span>
+    </div>
+  </header>
+
+  <div class="summary" id="summary"></div>
+
+  <div class="controls">
+    <span class="controls-label">Filtrar</span>
+    <div class="filters" id="filters"></div>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th data-col="data">Data</th>
+          <th data-col="simpl">Nome Simplificado</th>
+          <th data-col="orig">Nome Original (Extrato)</th>
+          <th data-col="cat">Categoria</th>
+          <th data-col="val" style="text-align:right">Valor (R$)</th>
+          <th data-col="origem">Origem</th>
+        </tr>
+      </thead>
+      <tbody id="tbody">
+        <tr><td colspan="6" class="empty">Carregando…</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <footer id="footer-period"></footer>
+</div>
+
+<script src="js/dashboard.js"></script>
+</body>
+</html>
