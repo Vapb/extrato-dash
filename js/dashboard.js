@@ -17,13 +17,16 @@ const PALETTE = [
   { bg: '#EDE9FE', text: '#5B21B6' }, // violet
 ];
 
+let injectedStyle = null;
+
 function injectBadgeStyles(categorias) {
-  const style = document.createElement('style');
-  style.textContent = categorias.map((cat, i) => {
+  if (injectedStyle) injectedStyle.remove();
+  injectedStyle = document.createElement('style');
+  injectedStyle.textContent = categorias.map((cat, i) => {
     const { bg, text } = PALETTE[i % PALETTE.length];
     return `.badge.${CSS.escape(cat)} { background: ${bg}; color: ${text}; }`;
   }).join('\n');
-  document.head.appendChild(style);
+  document.head.appendChild(injectedStyle);
 }
 
 let allData = [];
@@ -119,15 +122,16 @@ function render() {
   renderTable(rows);
 }
 
-function initFilters(cats) {
+function buildFilters(cats) {
   const filtersEl = document.getElementById('filters');
+  filtersEl.innerHTML = '';
   cats.forEach(c => {
     const btn = document.createElement('button');
     btn.className = 'filter-btn' + (c === 'Todos' ? ' active' : '');
     btn.textContent = c;
     btn.onclick = () => {
       activeFilter = c;
-      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('#filters .filter-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       render();
     };
@@ -148,32 +152,90 @@ function initSort() {
   });
 }
 
-fetch('data/carmen/2026-04_debito.json')
-  .then(r => {
-    if (!r.ok) throw new Error(r.status);
-    return r.json();
-  })
-  .then(({ meta, categorias_validas, lancamentos }) => {
-    allData = lancamentos.map(l => ({
-      data:   isoToDisplay(l.data),
-      orig:   l.nome_original,
-      simpl:  l.nome_simplificado,
-      cat:    l.categoria,
-      val:    l.valor,
-      origem: l.origem,
-    }));
+let currentFolder = null;
 
-    const catsNoData = new Set(allData.map(d => d.cat));
-    const extra = [...catsNoData].filter(c => !categorias_validas.includes(c));
-    const allCats = [...categorias_validas, ...extra];
-    const cats = ['Todos', ...allCats.filter(c => catsNoData.has(c))];
+function loadFile(file) {
+  activeFilter = 'Todos';
 
-    injectBadgeStyles(allCats);
-    populateHeader(meta);
-    initFilters(cats);
-    initSort();
+  fetch(`data/${currentFolder}/${file}`)
+    .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(({ meta, categorias_validas, lancamentos }) => {
+      allData = lancamentos.map(l => ({
+        data:   isoToDisplay(l.data),
+        orig:   l.nome_original,
+        simpl:  l.nome_simplificado,
+        cat:    l.categoria,
+        val:    l.valor,
+        origem: l.origem,
+      }));
 
-    render();
+      const catsInData = new Set(allData.map(d => d.cat));
+      const extra = [...catsInData].filter(c => !categorias_validas.includes(c));
+      const allCats = [...categorias_validas, ...extra];
+      const cats = ['Todos', ...allCats.filter(c => catsInData.has(c))];
+
+      injectBadgeStyles(allCats);
+      populateHeader(meta);
+      buildFilters(cats);
+      render();
+    })
+    .catch(() => {
+      document.getElementById('tbody').innerHTML =
+        '<tr><td colspan="6" class="empty">Erro ao carregar dados. Abra via servidor local (ex: <code>npx serve</code>).</td></tr>';
+    });
+}
+
+function buildMonthSelector(arquivos, activeFile) {
+  const monthsEl = document.getElementById('months');
+  monthsEl.innerHTML = '';
+  arquivos.forEach(({ label, file }) => {
+    const btn = document.createElement('button');
+    btn.className = 'filter-btn' + (file === activeFile ? ' active' : '');
+    btn.textContent = label;
+    btn.onclick = () => {
+      document.querySelectorAll('#months .filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      loadFile(file);
+    };
+    monthsEl.appendChild(btn);
+  });
+}
+
+function loadPerson(folder) {
+  currentFolder = folder;
+
+  fetch(`data/${folder}/manifest.json`)
+    .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(({ arquivos }) => {
+      const latest = arquivos[arquivos.length - 1].file;
+      buildMonthSelector(arquivos, latest);
+      loadFile(latest);
+    });
+}
+
+function buildPersonSelector(pessoas, activeFolder) {
+  const pessoasEl = document.getElementById('pessoas');
+  pessoas.forEach(({ label, folder }) => {
+    const btn = document.createElement('button');
+    btn.className = 'filter-btn' + (folder === activeFolder ? ' active' : '');
+    btn.textContent = label;
+    btn.onclick = () => {
+      document.querySelectorAll('#pessoas .filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      loadPerson(folder);
+    };
+    pessoasEl.appendChild(btn);
+  });
+}
+
+initSort();
+
+fetch('data/manifest.json')
+  .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+  .then(({ pessoas }) => {
+    const first = pessoas[0];
+    buildPersonSelector(pessoas, first.folder);
+    loadPerson(first.folder);
   })
   .catch(() => {
     document.getElementById('tbody').innerHTML =
