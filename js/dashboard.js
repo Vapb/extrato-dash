@@ -75,9 +75,10 @@ function filtered() {
 }
 
 function renderSummary(rows) {
-  const ent = rows.filter(d => d.val > 0).reduce((a, d) => a + d.val, 0);
-  const sai = rows.filter(d => d.val < 0).reduce((a, d) => a + d.val, 0);
-  const total = rows.reduce((a, d) => a + d.val, 0);
+  const bal = rows.filter(d => d.cat !== 'Investimento');
+  const ent = bal.filter(d => d.val > 0).reduce((a, d) => a + d.val, 0);
+  const sai = bal.filter(d => d.val < 0).reduce((a, d) => a + d.val, 0);
+  const total = bal.reduce((a, d) => a + d.val, 0);
   document.getElementById('summary').innerHTML = `
     <div class="card">
       <div class="card-label">Entradas</div>
@@ -107,10 +108,10 @@ function renderTable(rows) {
   tbody.innerHTML = rows.map(d => `
     <tr>
       <td class="mono">${d.data}</td>
-      <td>${d.simpl}</td>
+      <td>${d.simpl}${d.parcelaAtual != null ? ` <span class="parcela">{${d.parcelaAtual}/${d.parcelaTotal}}</span>` : ''}</td>
       <td class="orig-cell">${d.orig}</td>
       <td><span class="badge ${d.cat}">${d.cat}</span></td>
-      <td class="val ${d.val < 0 ? 'neg' : 'pos'}">${fmt(d.val)}</td>
+      <td class="val ${d.cat === 'Investimento' ? 'inv' : (d.val < 0 ? 'neg' : 'pos')}">${d.cat === 'Investimento' ? Math.abs(d.val).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : fmt(d.val)}</td>
       <td class="origem-cell">${d.origem}</td>
     </tr>
   `).join('');
@@ -161,12 +162,14 @@ function loadFile(file) {
     .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
     .then(({ meta, categorias_validas, lancamentos }) => {
       allData = lancamentos.map(l => ({
-        data:   isoToDisplay(l.data),
-        orig:   l.nome_original,
-        simpl:  l.nome_simplificado,
-        cat:    l.categoria,
-        val:    l.valor,
-        origem: l.origem,
+        data:          isoToDisplay(l.data),
+        orig:          l.nome_original,
+        simpl:         l.nome_simplificado,
+        cat:           l.categoria,
+        val:           l.valor,
+        origem:        l.origem,
+        parcelaAtual:  l.parcela_atual  ?? null,
+        parcelaTotal:  l.parcelas_total ?? null,
       }));
 
       const catsInData = new Set(allData.map(d => d.cat));

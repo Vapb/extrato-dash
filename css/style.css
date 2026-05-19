@@ -208,7 +208,15 @@ td.orig-cell { color: var(--text-muted); font-size: 11px; font-family: 'DM Mono'
 td.val { text-align: right; font-family: 'DM Mono', monospace; font-size: 13px; white-space: nowrap; font-weight: 500; }
 td.val.pos { color: var(--green); }
 td.val.neg { color: var(--red); }
+td.val.inv { color: var(--amber); }
 td.origem-cell { color: var(--text-faint); font-size: 11px; white-space: nowrap; }
+
+/* Parcelas */
+.parcela {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--amber);
+}
 
 /* Badges */
 .badge {
