@@ -12,6 +12,27 @@ Dashboard para visualização de extratos bancários pessoais, construído com H
 - Paleta de 15 cores intercaladas — cada categoria recebe uma cor distinta automaticamente
 - Dados carregados via `fetch()` a partir de JSONs locais — zero dado hardcoded no HTML
 
+## Primeiros passos com o sample data
+
+O repositório inclui um `data-sample/` com dois perfis fictícios (Person 1 e Person 2), dois meses cada, cobrindo todas as funcionalidades: parcelas, categoria `Investimento`, múltiplos bancos, entradas e saídas.
+
+**Para rodar o projeto imediatamente:**
+
+```bash
+# 1. Copie o sample para a pasta data/ (git-ignorada)
+cp -r data-sample/ data/
+
+# 2. Suba o servidor
+bash scripts/00_start_dev.sh
+```
+
+**Quando quiser usar seus próprios dados:**
+1. Use os arquivos em `data-sample/` como referência de schema
+2. Delete o conteúdo de `data/` e crie suas próprias pastas e JSONs
+3. O `data-sample/` permanece no repo para consulta — não o apague
+
+> `data/` é git-ignorado para proteger dados financeiros reais. `data-sample/` é versionado justamente para servir como ponto de partida.
+
 ## Como rodar
 
 ```bash
@@ -30,10 +51,20 @@ extrato-dash/
 ├── js/dashboard.js
 ├── scripts/
 │   └── 00_start_dev.sh
-└── data/                              # git-ignorado (dados financeiros)
-    ├── manifest.json                  # lista de pessoas disponíveis
+├── data-sample/                       # dados fictícios de exemplo (versionado)
+│   ├── manifest.json
+│   ├── person1/
+│   │   ├── manifest.json
+│   │   ├── 2026-04.json
+│   │   └── 2026-05.json
+│   └── person2/
+│       ├── manifest.json
+│       ├── 2026-04.json
+│       └── 2026-05.json
+└── data/                              # git-ignorado (seus dados financeiros reais)
+    ├── manifest.json
     └── {pessoa}/
-        ├── manifest.json              # meses disponíveis
+        ├── manifest.json
         └── YYYY-MM.json
 ```
 

@@ -1,0 +1,190 @@
+{
+  "meta": {
+    "titular": "Person 1",
+    "bancos": ["Banco Alpha"],
+    "contas": [
+      { "banco": "Banco Alpha", "agencia": "0001", "conta": "123456-7" }
+    ],
+    "periodo": {
+      "inicio": "2026-04-01",
+      "fim": "2026-04-30"
+    },
+    "gerado_em": "2026-04-30"
+  },
+  "categorias_validas": [
+    "Recebimento",
+    "Moradia",
+    "Alimentação",
+    "Saude",
+    "Transporte",
+    "Lazer",
+    "Investimento",
+    "Outro"
+  ],
+  "lancamentos": [
+    {
+      "data": "2026-04-05",
+      "nome_original": "CREDITO SALARIO EMP01 05/04",
+      "nome_simplificado": "Salário",
+      "categoria": "Recebimento",
+      "valor": 5200.00,
+      "origem": "Banco Alpha"
+    },
+    {
+      "data": "2026-04-05",
+      "nome_original": "PIX TRANSF FREELA 05/04",
+      "nome_simplificado": "Freela design",
+      "categoria": "Recebimento",
+      "valor": 800.00,
+      "origem": "Banco Alpha PIX"
+    },
+    {
+      "data": "2026-04-06",
+      "nome_original": "PIX QRS CONDOMINIO 06/04",
+      "nome_simplificado": "Condomínio",
+      "categoria": "Moradia",
+      "valor": -950.00,
+      "origem": "Banco Alpha Online"
+    },
+    {
+      "data": "2026-04-06",
+      "nome_original": "PIX QRS ENERGIA EL06/04",
+      "nome_simplificado": "Conta de luz",
+      "categoria": "Moradia",
+      "valor": -187.50,
+      "origem": "Banco Alpha Online"
+    },
+    {
+      "data": "2026-04-07",
+      "nome_original": "DEB AUT INTERNET TV07/04",
+      "nome_simplificado": "Internet + TV a cabo",
+      "categoria": "Moradia",
+      "valor": -149.90,
+      "origem": "Banco Alpha Débito"
+    },
+    {
+      "data": "2026-04-08",
+      "nome_original": "RSHOP SUPERMERCAD 0804",
+      "nome_simplificado": "Supermercado",
+      "categoria": "Alimentação",
+      "valor": -412.30,
+      "origem": "Banco Alpha Débito"
+    },
+    {
+      "data": "2026-04-10",
+      "nome_original": "PIX QRS IFOOD COM 10/04",
+      "nome_simplificado": "iFood",
+      "categoria": "Alimentação",
+      "valor": -67.90,
+      "origem": "Banco Alpha Online"
+    },
+    {
+      "data": "2026-04-10",
+      "nome_original": "TED TRANSF INVEST A10/04",
+      "nome_simplificado": "Aporte Tesouro Direto",
+      "categoria": "Investimento",
+      "valor": -1000.00,
+      "origem": "Banco Alpha TED"
+    },
+    {
+      "data": "2026-04-12",
+      "nome_original": "RSHOP FARMACIA POP1204",
+      "nome_simplificado": "Farmácia (vitaminas)",
+      "categoria": "Saude",
+      "valor": -89.80,
+      "origem": "Banco Alpha Débito"
+    },
+    {
+      "data": "2026-04-14",
+      "nome_original": "RSHOP POSTO COMBUS1404",
+      "nome_simplificado": "Combustível",
+      "categoria": "Transporte",
+      "valor": -220.00,
+      "origem": "Banco Alpha Débito"
+    },
+    {
+      "data": "2026-04-15",
+      "nome_original": "REND PAGO APLIC AUT 15/04",
+      "nome_simplificado": "Rendimento CDB",
+      "categoria": "Recebimento",
+      "valor": 42.15,
+      "origem": "Banco Alpha"
+    },
+    {
+      "data": "2026-04-16",
+      "nome_original": "PIX QRS CINEMA CIT 16/04",
+      "nome_simplificado": "Cinema (2 ingressos)",
+      "categoria": "Lazer",
+      "valor": -88.00,
+      "origem": "Banco Alpha Online"
+    },
+    {
+      "data": "2026-04-18",
+      "nome_original": "PARC NOTEBOOK DELL1804",
+      "nome_simplificado": "Notebook Dell (parcelado)",
+      "categoria": "Outro",
+      "valor": -250.00,
+      "origem": "Banco Alpha Crédito",
+      "parcela_atual": 3,
+      "parcelas_total": 10
+    },
+    {
+      "data": "2026-04-20",
+      "nome_original": "RSHOP SUPERMERCAD 2004",
+      "nome_simplificado": "Supermercado",
+      "categoria": "Alimentação",
+      "valor": -318.75,
+      "origem": "Banco Alpha Débito"
+    },
+    {
+      "data": "2026-04-22",
+      "nome_original": "PIX QRS ACADEMIA F 22/04",
+      "nome_simplificado": "Academia",
+      "categoria": "Saude",
+      "valor": -99.90,
+      "origem": "Banco Alpha Online"
+    },
+    {
+      "data": "2026-04-24",
+      "nome_original": "PIX QRS IFOOD COM 24/04",
+      "nome_simplificado": "iFood (almoço)",
+      "categoria": "Alimentação",
+      "valor": -52.40,
+      "origem": "Banco Alpha Online"
+    },
+    {
+      "data": "2026-04-25",
+      "nome_original": "TED TRANSF INVEST A25/04",
+      "nome_simplificado": "Aporte fundo de ações",
+      "categoria": "Investimento",
+      "valor": -500.00,
+      "origem": "Banco Alpha TED"
+    },
+    {
+      "data": "2026-04-28",
+      "nome_original": "PIX QRS UBER TECNO 28/04",
+      "nome_simplificado": "Uber",
+      "categoria": "Transporte",
+      "valor": -34.90,
+      "origem": "Banco Alpha Online"
+    },
+    {
+      "data": "2026-04-29",
+      "nome_original": "RSHOP LIVRARIA CUL 2904",
+      "nome_simplificado": "Livraria (2 livros)",
+      "categoria": "Lazer",
+      "valor": -79.80,
+      "origem": "Banco Alpha Débito"
+    },
+    {
+      "data": "2026-04-30",
+      "nome_original": "PARC SOFA ESTOFADO 3004",
+      "nome_simplificado": "Sofá (parcelado)",
+      "categoria": "Moradia",
+      "valor": -183.33,
+      "origem": "Banco Alpha Crédito",
+      "parcela_atual": 1,
+      "parcelas_total": 6
+    }
+  ]
+}

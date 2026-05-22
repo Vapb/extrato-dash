@@ -1,0 +1,6 @@
+{
+  "pessoas": [
+    { "label": "Person 1", "folder": "person1" },
+    { "label": "Person 2", "folder": "person2" }
+  ]
+}

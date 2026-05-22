@@ -1,0 +1,191 @@
+{
+  "meta": {
+    "titular": "Person 2",
+    "bancos": ["Banco Beta", "Banco Gamma"],
+    "contas": [
+      { "banco": "Banco Beta",  "agencia": "0042", "conta": "987654-3" },
+      { "banco": "Banco Gamma", "agencia": "0099", "conta": "555000-1" }
+    ],
+    "periodo": {
+      "inicio": "2026-04-01",
+      "fim": "2026-04-30"
+    },
+    "gerado_em": "2026-04-30"
+  },
+  "categorias_validas": [
+    "Recebimento",
+    "Moradia",
+    "Alimentação",
+    "Educação",
+    "Transporte",
+    "Assinaturas",
+    "Investimento",
+    "Outro"
+  ],
+  "lancamentos": [
+    {
+      "data": "2026-04-01",
+      "nome_original": "CREDITO SALARIO EMP02 01/04",
+      "nome_simplificado": "Salário",
+      "categoria": "Recebimento",
+      "valor": 7800.00,
+      "origem": "Banco Beta"
+    },
+    {
+      "data": "2026-04-02",
+      "nome_original": "DEB AUT ALUGUEL 02/04",
+      "nome_simplificado": "Aluguel",
+      "categoria": "Moradia",
+      "valor": -2200.00,
+      "origem": "Banco Beta Débito"
+    },
+    {
+      "data": "2026-04-03",
+      "nome_original": "PIX QRS AGUA SANE 03/04",
+      "nome_simplificado": "Conta de água",
+      "categoria": "Moradia",
+      "valor": -85.40,
+      "origem": "Banco Beta Online"
+    },
+    {
+      "data": "2026-04-03",
+      "nome_original": "DEB AUT NETFLIX 03/04",
+      "nome_simplificado": "Netflix",
+      "categoria": "Assinaturas",
+      "valor": -55.90,
+      "origem": "Banco Beta Débito"
+    },
+    {
+      "data": "2026-04-03",
+      "nome_original": "DEB AUT SPOTIFY 03/04",
+      "nome_simplificado": "Spotify",
+      "categoria": "Assinaturas",
+      "valor": -21.90,
+      "origem": "Banco Beta Débito"
+    },
+    {
+      "data": "2026-04-05",
+      "nome_original": "RSHOP SUPERMERCAD 0504",
+      "nome_simplificado": "Supermercado",
+      "categoria": "Alimentação",
+      "valor": -530.20,
+      "origem": "Banco Beta Débito"
+    },
+    {
+      "data": "2026-04-07",
+      "nome_original": "TED TRANSF INVEST B07/04",
+      "nome_simplificado": "Aporte previdência privada",
+      "categoria": "Investimento",
+      "valor": -1500.00,
+      "origem": "Banco Beta TED"
+    },
+    {
+      "data": "2026-04-08",
+      "nome_original": "PIX QRS CURSO LING 08/04",
+      "nome_simplificado": "Curso de inglês (mensal)",
+      "categoria": "Educação",
+      "valor": -320.00,
+      "origem": "Banco Beta Online"
+    },
+    {
+      "data": "2026-04-10",
+      "nome_original": "RSHOP POSTO COMBUS1004",
+      "nome_simplificado": "Combustível",
+      "categoria": "Transporte",
+      "valor": -310.00,
+      "origem": "Banco Beta Débito"
+    },
+    {
+      "data": "2026-04-10",
+      "nome_original": "DEB AUT SEGURO CAR10/04",
+      "nome_simplificado": "Seguro do carro (parcelado)",
+      "categoria": "Transporte",
+      "valor": -198.50,
+      "origem": "Banco Beta Débito",
+      "parcela_atual": 2,
+      "parcelas_total": 12
+    },
+    {
+      "data": "2026-04-12",
+      "nome_original": "PIX QRS IFOOD COM 12/04",
+      "nome_simplificado": "iFood",
+      "categoria": "Alimentação",
+      "valor": -93.50,
+      "origem": "Banco Beta Online"
+    },
+    {
+      "data": "2026-04-14",
+      "nome_original": "PARC MBA GESTAO 1404",
+      "nome_simplificado": "MBA Gestão (parcelado)",
+      "categoria": "Educação",
+      "valor": -580.00,
+      "origem": "Banco Beta Crédito",
+      "parcela_atual": 5,
+      "parcelas_total": 24
+    },
+    {
+      "data": "2026-04-15",
+      "nome_original": "PIX TRANSF BONUS 15/04",
+      "nome_simplificado": "Bônus trimestral",
+      "categoria": "Recebimento",
+      "valor": 2500.00,
+      "origem": "Banco Beta PIX"
+    },
+    {
+      "data": "2026-04-16",
+      "nome_original": "REND PAGO APLIC AUT 16/04",
+      "nome_simplificado": "Rendimento previdência",
+      "categoria": "Recebimento",
+      "valor": 87.30,
+      "origem": "Banco Beta"
+    },
+    {
+      "data": "2026-04-18",
+      "nome_original": "RSHOP SUPERMERCAD 1804",
+      "nome_simplificado": "Supermercado",
+      "categoria": "Alimentação",
+      "valor": -445.80,
+      "origem": "Banco Gamma Débito"
+    },
+    {
+      "data": "2026-04-20",
+      "nome_original": "TED TRANSF INVEST B20/04",
+      "nome_simplificado": "Aporte fundo multimercado",
+      "categoria": "Investimento",
+      "valor": -800.00,
+      "origem": "Banco Beta TED"
+    },
+    {
+      "data": "2026-04-22",
+      "nome_original": "PIX QRS UBER TECNO 22/04",
+      "nome_simplificado": "Uber (semana)",
+      "categoria": "Transporte",
+      "valor": -67.20,
+      "origem": "Banco Beta Online"
+    },
+    {
+      "data": "2026-04-25",
+      "nome_original": "DEB AUT CLOUD SERV25/04",
+      "nome_simplificado": "Google One + iCloud",
+      "categoria": "Assinaturas",
+      "valor": -45.90,
+      "origem": "Banco Beta Débito"
+    },
+    {
+      "data": "2026-04-28",
+      "nome_original": "PIX QRS RESTAURAN 28/04",
+      "nome_simplificado": "Jantar aniversário",
+      "categoria": "Alimentação",
+      "valor": -248.00,
+      "origem": "Banco Beta Online"
+    },
+    {
+      "data": "2026-04-30",
+      "nome_original": "PIX QRS MANUTENCAO 3004",
+      "nome_simplificado": "Manutenção carro (revisão)",
+      "categoria": "Transporte",
+      "valor": -420.00,
+      "origem": "Banco Beta Online"
+    }
+  ]
+}
