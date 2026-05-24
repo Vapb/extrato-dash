@@ -30,9 +30,11 @@ function injectBadgeStyles(categorias) {
 }
 
 let allData = [];
+let allCatsOrder = [];
 let activeFilter = 'Todos';
 let sortCol = 'data';
 let sortDir = 1;
+let chartInst = null;
 
 function parseDate(s) {
   const [d, m, y] = s.split('/');
@@ -99,6 +101,76 @@ function renderSummary(rows) {
   `;
 }
 
+function renderChart() {
+  const colorMap = {};
+  allCatsOrder.forEach((cat, i) => {
+    colorMap[cat] = PALETTE[i % PALETTE.length];
+  });
+
+  const totals = {};
+  allData.filter(d => d.val < 0 && d.cat !== 'Investimento').forEach(d => {
+    totals[d.cat] = (totals[d.cat] || 0) + Math.abs(d.val);
+  });
+
+  const sorted = Object.entries(totals).sort((a, b) => b[1] - a[1]);
+  const labels = sorted.map(e => e[0]);
+  const values = sorted.map(e => Math.round(e[1] * 100) / 100);
+  const colors = labels.map(l => colorMap[l] || PALETTE[0]);
+
+  if (chartInst) chartInst.destroy();
+  const ctx = document.getElementById('catChart').getContext('2d');
+  chartInst = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Gasto (R$)',
+        data: values,
+        backgroundColor: colors.map(c => c.text + 'BB'),
+        borderColor: colors.map(c => c.text),
+        borderWidth: 1.5,
+        borderRadius: 5,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => ' R$ ' + ctx.parsed.y.toLocaleString('pt-BR', { minimumFractionDigits: 2 })
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: { autoSkip: false, maxRotation: 30, font: { size: 11, family: "'DM Sans'" }, color: '#7A756C' },
+          grid: { display: false },
+          border: { color: '#D8D4CC' }
+        },
+        y: {
+          ticks: {
+            font: { size: 11, family: "'DM Mono'" }, color: '#7A756C',
+            callback: v => 'R$ ' + v.toLocaleString('pt-BR')
+          },
+          grid: { color: 'rgba(0,0,0,.05)' },
+          border: { dash: [3, 3], color: 'transparent' }
+        }
+      }
+    }
+  });
+
+  document.getElementById('chart-legend').innerHTML = sorted.map(([cat, val]) => {
+    const color = colorMap[cat] || PALETTE[0];
+    return `<span>
+      <span class="legend-dot" style="background:${color.text}"></span>
+      ${cat}&nbsp;<strong>R$ ${Math.round(val).toLocaleString('pt-BR')}</strong>
+    </span>`;
+  }).join('');
+}
+
 function renderTable(rows) {
   const tbody = document.getElementById('tbody');
   if (rows.length === 0) {
@@ -120,6 +192,7 @@ function renderTable(rows) {
 function render() {
   const rows = filtered();
   renderSummary(rows);
+  renderChart();
   renderTable(rows);
 }
 
@@ -174,10 +247,10 @@ function loadFile(file) {
 
       const catsInData = new Set(allData.map(d => d.cat));
       const extra = [...catsInData].filter(c => !categorias_validas.includes(c));
-      const allCats = [...categorias_validas, ...extra];
-      const cats = ['Todos', ...allCats.filter(c => catsInData.has(c))];
+      allCatsOrder = [...categorias_validas, ...extra];
+      const cats = ['Todos', ...allCatsOrder.filter(c => catsInData.has(c))];
 
-      injectBadgeStyles(allCats);
+      injectBadgeStyles(allCatsOrder);
       populateHeader(meta);
       buildFilters(cats);
       render();

@@ -19,6 +19,14 @@
 
   <div class="summary" id="summary"></div>
 
+  <div class="chart-section">
+    <div class="section-title">Gastos por categoria</div>
+    <div style="position:relative;width:100%;height:260px">
+      <canvas id="catChart" role="img" aria-label="Gráfico de barras com total de gastos por categoria"></canvas>
+    </div>
+    <div class="chart-legend" id="chart-legend"></div>
+  </div>
+
   <div class="controls">
     <span class="controls-label">Pessoa</span>
     <div id="pessoas"></div>
@@ -55,6 +63,7 @@
   <footer id="footer-period"></footer>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="js/dashboard.js"></script>
 </body>
 </html>
