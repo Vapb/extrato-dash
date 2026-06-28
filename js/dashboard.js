@@ -29,6 +29,8 @@ function injectBadgeStyles(categorias) {
   document.head.appendChild(injectedStyle);
 }
 
+const EXCLUDED_CATS = new Set(['Investimento', 'Ignorar']);
+
 let allData = [];
 let allCatsOrder = [];
 let activeFilter = 'Todos';
@@ -77,7 +79,7 @@ function filtered() {
 }
 
 function renderSummary(rows) {
-  const bal = rows.filter(d => d.cat !== 'Investimento');
+  const bal = rows.filter(d => !EXCLUDED_CATS.has(d.cat));
   const ent = bal.filter(d => d.val > 0).reduce((a, d) => a + d.val, 0);
   const sai = bal.filter(d => d.val < 0).reduce((a, d) => a + d.val, 0);
   const total = bal.reduce((a, d) => a + d.val, 0);
@@ -108,7 +110,7 @@ function renderChart() {
   });
 
   const totals = {};
-  allData.filter(d => d.val < 0 && d.cat !== 'Investimento').forEach(d => {
+  allData.filter(d => d.val < 0 && !EXCLUDED_CATS.has(d.cat)).forEach(d => {
     totals[d.cat] = (totals[d.cat] || 0) + Math.abs(d.val);
   });
 
@@ -183,7 +185,7 @@ function renderTable(rows) {
       <td>${d.simpl}${d.parcelaAtual != null ? ` <span class="parcela">{${d.parcelaAtual}/${d.parcelaTotal}}</span>` : ''}</td>
       <td class="orig-cell">${d.orig}</td>
       <td><span class="badge ${d.cat}">${d.cat}</span></td>
-      <td class="val ${d.cat === 'Investimento' ? 'inv' : (d.val < 0 ? 'neg' : 'pos')}">${d.cat === 'Investimento' ? Math.abs(d.val).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : fmt(d.val)}</td>
+      <td class="val ${EXCLUDED_CATS.has(d.cat) ? 'inv' : (d.val < 0 ? 'neg' : 'pos')}">${EXCLUDED_CATS.has(d.cat) ? Math.abs(d.val).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : fmt(d.val)}</td>
       <td class="origem-cell">${d.origem}</td>
     </tr>
   `).join('');
@@ -228,12 +230,94 @@ function initSort() {
 
 let currentFolder = null;
 
+function detectDelimiter(line) {
+  return (line.match(/;/g) || []).length >= (line.match(/,/g) || []).length ? ';' : ',';
+}
+
+function parseCSVRow(line, delim) {
+  const result = [];
+  let current = '';
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"') {
+      if (inQuotes && line[i + 1] === '"') { current += '"'; i++; }
+      else inQuotes = !inQuotes;
+    } else if (ch === delim && !inQuotes) {
+      result.push(current.trim());
+      current = '';
+    } else {
+      current += ch;
+    }
+  }
+  result.push(current.trim());
+  return result;
+}
+
+function parseCSV(text, folder) {
+  const meta = { titular: folder, bancos: [], contas: [], periodo: { inicio: '', fim: '' }, gerado_em: '' };
+  const categorias_validas = [];
+  const dataLines = [];
+
+  for (const line of text.split('\n')) {
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+    if (trimmed.startsWith('#')) {
+      const colonIdx = trimmed.indexOf(':', 1);
+      if (colonIdx === -1) continue;
+      const key = trimmed.slice(1, colonIdx).trim();
+      const val = trimmed.slice(colonIdx + 1).trim();
+      if (key === 'titular')             meta.titular = val;
+      else if (key === 'bancos')         meta.bancos = val.split(',').map(s => s.trim());
+      else if (key === 'contas')         meta.contas = val.split(',').map(s => s.trim());
+      else if (key === 'periodo_inicio') meta.periodo.inicio = val;
+      else if (key === 'periodo_fim')    meta.periodo.fim = val;
+      else if (key === 'gerado_em')      meta.gerado_em = val;
+      else if (key === 'categorias_validas')
+        categorias_validas.push(...val.split(',').map(s => s.trim()).filter(Boolean));
+    } else {
+      dataLines.push(trimmed);
+    }
+  }
+
+  const [header, ...rows] = dataLines;
+  const delim = detectDelimiter(header);
+  const cols = parseCSVRow(header, delim);
+
+  const lancamentos = rows.map(row => {
+    const vals = parseCSVRow(row, delim);
+    const o = Object.fromEntries(cols.map((c, i) => [c, vals[i] ?? '']));
+    return {
+      data:              o.data,
+      nome_original:     o.nome_original,
+      nome_simplificado: o.nome_simplificado,
+      categoria:         o.categoria,
+      valor:             parseFloat(o.valor),
+      origem:            o.origem,
+      parcela_atual:     o.parcela_atual  ? parseInt(o.parcela_atual)  : undefined,
+      parcelas_total:    o.parcelas_total ? parseInt(o.parcelas_total) : undefined,
+    };
+  });
+
+  // Derive periodo from dates in data when not set via # header lines
+  if (!meta.periodo.inicio && lancamentos.length) {
+    const sorted = lancamentos.map(l => l.data).filter(Boolean).sort();
+    meta.periodo.inicio = sorted[0];
+    meta.periodo.fim    = sorted[sorted.length - 1];
+  }
+
+  return { meta, categorias_validas, lancamentos };
+}
+
 function loadFile(file) {
   activeFilter = 'Todos';
 
   fetch(`data/${currentFolder}/${file}`)
-    .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
-    .then(({ meta, categorias_validas, lancamentos }) => {
+    .then(r => { if (!r.ok) throw new Error(r.status); return r.text(); })
+    .then(text => {
+      const { meta, categorias_validas, lancamentos } =
+        file.endsWith('.csv') ? parseCSV(text, currentFolder) : JSON.parse(text);
+
       allData = lancamentos.map(l => ({
         data:          isoToDisplay(l.data),
         orig:          l.nome_original,

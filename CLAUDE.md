@@ -34,12 +34,37 @@ Category badge colors are assigned by index into `PALETTE` (15 entries, cycles).
 
 - `data/manifest.json` → lists persons: `{ "pessoas": [{ "label", "folder" }] }`
 - `data/{folder}/manifest.json` → lists months: `{ "arquivos": [{ "label", "file" }] }`
-- `data/{folder}/{file}` → transaction file referenced by the month manifest (filename is arbitrary, e.g. `2026-05.json` or `2026-05_debito.json`)
+- `data/{folder}/{file}` → transaction file referenced by the month manifest. Both `.json` and `.csv` are supported (format detected by extension, e.g. `2026-05.json` or `2026-05.csv`).
 
-Each transaction file has three top-level keys:
+### JSON format
+
+Three top-level keys:
 - `meta` — `{ titular, bancos[], contas[], periodo: { inicio, fim }, gerado_em }`
 - `categorias_validas[]` — canonical order for filter buttons; categories in transactions but absent here are appended at the end
 - `lancamentos[]` — each entry: `data` (ISO), `nome_original`, `nome_simplificado`, `categoria`, `valor` (number, negative = expense), `origem`, and optionally `parcela_atual` / `parcelas_total` (integers, for installment transactions)
+
+### CSV format
+
+`#`-prefixed comment lines carry metadata, followed by a header row and data rows:
+
+```
+# titular: Person
+# bancos: Nubank, Bradesco
+# contas: Conta corrente, Cartão de crédito
+# periodo_inicio: 2026-01-01
+# periodo_fim: 2026-01-31
+# gerado_em: 2026-02-01
+# categorias_validas: Alimentação, Transporte, Saúde, Lazer, Investimento
+data,nome_original,nome_simplificado,categoria,valor,origem,parcela_atual,parcelas_total
+2026-01-05,SUPERMERCADO XYZ,Supermercado,Alimentação,-89.50,Nubank,,
+2026-01-10,UBER *TRIP,Uber,Transporte,-18.90,Nubank,,
+2026-01-15,SALARIO EMPRESA,Salário,Renda,5000.00,Bradesco,,
+2026-01-20,LOJA ABC,Loja ABC,Vestuário,-199.90,Nubank,2,3
+```
+
+- `parcela_atual` and `parcelas_total` are optional — leave empty for non-installment rows.
+- Fields containing commas must be wrapped in double quotes.
+- `valor` uses `.` as decimal separator.
 
 **Investimento category** is treated specially: excluded from the Entradas/Saídas/Saldo summary cards, and its value is always rendered as a neutral absolute amount in the table (no +/− sign, no color).
 
