@@ -103,18 +103,22 @@ function renderSummary(rows) {
   `;
 }
 
-function renderChart() {
+function renderChart(rows) {
   const colorMap = {};
   allCatsOrder.forEach((cat, i) => {
     colorMap[cat] = PALETTE[i % PALETTE.length];
   });
 
-  const totals = {};
-  allData.filter(d => d.val < 0 && !EXCLUDED_CATS.has(d.cat)).forEach(d => {
-    totals[d.cat] = (totals[d.cat] || 0) + Math.abs(d.val);
+  const saldos = {};
+  rows.filter(d => !EXCLUDED_CATS.has(d.cat)).forEach(d => {
+    saldos[d.cat] = (saldos[d.cat] || 0) + d.val;
   });
 
-  const sorted = Object.entries(totals).sort((a, b) => b[1] - a[1]);
+  // only categories with net cost (negative balance)
+  const sorted = Object.entries(saldos)
+    .filter(([, v]) => v < 0)
+    .map(([cat, v]) => [cat, Math.abs(v)])
+    .sort((a, b) => b[1] - a[1]);
   const labels = sorted.map(e => e[0]);
   const values = sorted.map(e => Math.round(e[1] * 100) / 100);
   const colors = labels.map(l => colorMap[l] || PALETTE[0]);
@@ -194,25 +198,28 @@ function renderTable(rows) {
 function render() {
   const rows = filtered();
   renderSummary(rows);
-  renderChart();
+  renderChart(rows);
   renderTable(rows);
 }
 
-function buildFilters(cats) {
-  const filtersEl = document.getElementById('filters');
-  filtersEl.innerHTML = '';
-  cats.forEach(c => {
+function buildButtonGroup(id, items, labelFn, activeFn, onClickFn) {
+  const el = document.getElementById(id);
+  el.innerHTML = '';
+  items.forEach(item => {
     const btn = document.createElement('button');
-    btn.className = 'filter-btn' + (c === 'Todos' ? ' active' : '');
-    btn.textContent = c;
+    btn.className = 'filter-btn' + (activeFn(item) ? ' active' : '');
+    btn.textContent = labelFn(item);
     btn.onclick = () => {
-      activeFilter = c;
-      document.querySelectorAll('#filters .filter-btn').forEach(b => b.classList.remove('active'));
+      el.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      render();
+      onClickFn(item);
     };
-    filtersEl.appendChild(btn);
+    el.appendChild(btn);
   });
+}
+
+function buildFilters(cats) {
+  buildButtonGroup('filters', cats, c => c, c => c === activeFilter, c => { activeFilter = c; render(); });
 }
 
 function initSort() {
@@ -226,6 +233,11 @@ function initSort() {
       render();
     });
   });
+}
+
+function showLoadError() {
+  document.getElementById('tbody').innerHTML =
+    '<tr><td colspan="6" class="empty">Erro ao carregar dados. Abra via servidor local (ex: <code>npx serve</code>).</td></tr>';
 }
 
 let currentFolder = null;
@@ -332,33 +344,18 @@ function loadFile(file) {
       const catsInData = new Set(allData.map(d => d.cat));
       const extra = [...catsInData].filter(c => !categorias_validas.includes(c));
       allCatsOrder = [...categorias_validas, ...extra];
-      const cats = ['Todos', ...allCatsOrder.filter(c => catsInData.has(c))];
+      const cats = ['Todos', ...allCatsOrder.filter(c => catsInData.has(c)).sort((a, b) => a.localeCompare(b, 'pt-BR'))];
 
       injectBadgeStyles(allCatsOrder);
       populateHeader(meta);
       buildFilters(cats);
       render();
     })
-    .catch(() => {
-      document.getElementById('tbody').innerHTML =
-        '<tr><td colspan="6" class="empty">Erro ao carregar dados. Abra via servidor local (ex: <code>npx serve</code>).</td></tr>';
-    });
+    .catch(showLoadError);
 }
 
 function buildMonthSelector(arquivos, activeFile) {
-  const monthsEl = document.getElementById('months');
-  monthsEl.innerHTML = '';
-  arquivos.forEach(({ label, file }) => {
-    const btn = document.createElement('button');
-    btn.className = 'filter-btn' + (file === activeFile ? ' active' : '');
-    btn.textContent = label;
-    btn.onclick = () => {
-      document.querySelectorAll('#months .filter-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      loadFile(file);
-    };
-    monthsEl.appendChild(btn);
-  });
+  buildButtonGroup('months', arquivos, a => a.label, a => a.file === activeFile, a => loadFile(a.file));
 }
 
 function loadPerson(folder) {
@@ -374,18 +371,7 @@ function loadPerson(folder) {
 }
 
 function buildPersonSelector(pessoas, activeFolder) {
-  const pessoasEl = document.getElementById('pessoas');
-  pessoas.forEach(({ label, folder }) => {
-    const btn = document.createElement('button');
-    btn.className = 'filter-btn' + (folder === activeFolder ? ' active' : '');
-    btn.textContent = label;
-    btn.onclick = () => {
-      document.querySelectorAll('#pessoas .filter-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      loadPerson(folder);
-    };
-    pessoasEl.appendChild(btn);
-  });
+  buildButtonGroup('pessoas', pessoas, p => p.label, p => p.folder === activeFolder, p => loadPerson(p.folder));
 }
 
 initSort();
@@ -397,7 +383,4 @@ fetch('data/manifest.json')
     buildPersonSelector(pessoas, first.folder);
     loadPerson(first.folder);
   })
-  .catch(() => {
-    document.getElementById('tbody').innerHTML =
-      '<tr><td colspan="6" class="empty">Erro ao carregar dados. Abra via servidor local (ex: <code>npx serve</code>).</td></tr>';
-  });
+  .catch(showLoadError);
